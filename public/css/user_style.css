@@ -1,0 +1,211 @@
+/* ======================= BODY ======================= */
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(#7BB4FF, #112E53);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+/* ======================= NAVBAR ======================= */
+.navbar {
+  display: flex;
+  align-items: center;
+  height: 70px;
+  width: 100%;
+  padding: 0 20px;
+  background: linear-gradient(to bottom, #D9D9D9 0%, #A6A6A6 100%);
+  justify-content: space-between;
+  color: black;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* โลโก้และชื่อร้าน */
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-left .logo {
+  width: 85px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.navbar-left h1 {
+  color: black;
+  font-size: 26px;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* ส่วนขวาของ navbar */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.navbar-right a {
+  color: black;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.navbar-right a::after {
+  content: "";
+  display: block;
+  height: 2px;
+  width: 0%;
+  background: #001AFF;
+  transition: width 0.3s ease;
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+}
+
+.navbar-right a:hover {
+  color: #001AFF;
+}
+
+.navbar-right a:hover::after {
+  width: 100%;
+}
+
+/* User Info */
+.user-info span {
+  font-weight: bold;
+  color: black;
+  cursor: pointer; /* กดชื่อผู้ใช้ได้ */
+}
+
+.user-info img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #444;
+  cursor: default; /* รูปกดไม่ได้ */
+  background-color: #fff;
+}
+
+/* ======================= PROFILE CARD ======================= */
+.profile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 70px);
+  flex-direction: column;
+}
+
+.profile-card {
+  position: relative; /* เพื่อให้ปุ่ม Edit อยู่ด้านบนขวา */
+  background: white;
+  padding: 40px 30px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.25);
+  width: 350px;
+  transition: transform 0.3s ease;
+}
+
+.profile-card:hover {
+  transform: translateY(-5px);
+}
+
+/* ปุ่ม Edit ด้านบนขวา */
+.card-header {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+
+.edit-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: none;
+  background: none;
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
+  color: #001AFF;
+  padding: 0;
+}
+
+.edit-btn .edit-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* รูปโปรไฟล์ใหญ่ */
+.profile-pic {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+  border: 2px solid #ccc;
+}
+
+/* ข้อมูลชื่อ อีเมล role */
+.info {
+  text-align: left;
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+/* ======================= CARD BUTTONS ======================= */
+.card-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 25px;
+}
+
+.amount-btn {
+  background-color: #B9FFBC;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.amount-btn:hover {
+  background-color: #9fffad;
+}
+
+.logout-btn {
+  background-color: #FF9F9F;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.logout-btn:hover {
+  background-color: #FF7F7F;
+}
+
+/* ======================= FORM INPUTS (ถ้ามี) ======================= */
+label {
+  display: block;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #888;
+  border-radius: 5px;
+}

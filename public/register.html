@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register | Game Shop</title>
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <div class="navbar0">
+    <img src="./image/logo1.png" alt="logo" class="logo" />
+    <h1>Game Shop</h1>
+  </div>
+
+  <div class="Register-container">
+    <div class="Register-card">
+      <h2>Register</h2>
+
+      <div class="profile-pic-container">
+        <img id="profilePreview" src="./image/user.png" alt="Profile" class="profile-pic" />
+        <input type="file" id="profileInput" accept="image/*" style="display: none;" />
+        <button type="button" id="uploadBtn">Upload Profile</button>
+      </div>
+
+      <form id="registerForm">
+        <label for="name">Name</label>
+        <input type="text" id="name" required />
+
+        <label for="email">Email</label>
+        <input type="email" id="email" required />
+
+        <label for="password">Password</label>
+        <input type="password" id="password" required />
+
+        <div class="button-container">
+          <button type="button" class="cancel-btn">Cancel</button>
+          <button type="submit" class="confirm-btn">Confirm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="./js/register.js"></script>
+</body>
+</html>

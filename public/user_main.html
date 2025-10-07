@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User | Game Shop</title>
+    <link rel="stylesheet" href="./css/user_style.css" />
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="navbar-left">
+            <img src="./image/logo1.png" alt="logo" class="logo" />
+            <h1>Game Shop</h1>
+        </div>
+
+        <div class="navbar-right">
+            <a href="/user_main">Store</a>
+            <a href="/library">Library</a>
+            <a href="/user_profile" id="username">User</a>
+            <div class="user-info">
+                <img id="profile-pic" src="" alt="Profile Picture" />
+            </div>
+
+            <script src="./js/navbar.js"></script>
+            <script>
+                window.addEventListener("DOMContentLoaded", async () => {
+                    try {
+                        // เช็ค session
+                        const res = await fetch("/check-session", { credentials: "include" });
+                        const data = await res.json();
+
+                        if (!data.loggedIn) {
+                            // ไม่ login → กลับหน้า login
+                            window.location.href = "/";
+                            return;
+                        }
+
+                        // แสดงข้อมูล user
+                        const profilePic = document.getElementById("profile-pic");
+                        const namePic = document.getElementById("username");
+                        profilePic.src = data.user.profile || "./image/user.png"; // default
+                        namePic.textContent = data.user.name || "User";
+
+                        // ถ้ามี lastPage เก็บไว้ → ไปหน้าสุดท้าย
+                        const lastPage = localStorage.getItem("lastPage");
+                        if (lastPage && lastPage !== window.location.pathname) {
+                            window.location.href = lastPage;
+                        }
+
+                        // Logout
+                        const logoutBtn = document.getElementById("logoutBtn");
+                        if (logoutBtn) {
+                            logoutBtn.addEventListener("click", async () => {
+                                await fetch("/logout", { method: "POST", credentials: "include" });
+                                localStorage.removeItem("lastPage"); // ล้าง lastPage
+                                window.location.href = "/";
+                            });
+                        }
+
+                    } catch (err) {
+                        console.error("Error fetching user info:", err);
+                    }
+                });
+
+                // เก็บหน้าปัจจุบันก่อนปิด/refresh
+                window.addEventListener("beforeunload", () => {
+                });
+            </script>
+</body>

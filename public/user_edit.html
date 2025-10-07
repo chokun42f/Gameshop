@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Profile | Game Shop</title>
+    <link rel="stylesheet" href="./css/user_style.css" />
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="navbar-left">
+            <img src="./image/logo1.png" alt="logo" class="logo" />
+            <h1>Game Shop</h1>
+        </div>
+
+        <div class="navbar-right">
+            <a href="/user_main">Store</a>
+            <a href="/library">Library</a>
+            <a href="/user_profile" id="username">User</a>
+            <div class="user-info">
+                <img id="profile-pic" src="./image/user.png" alt="Profile Picture" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Card -->
+    <div class="profile-container">
+        <div class="profile-card">
+            <h2>Edit Profile</h2>
+
+            <img id="profile-img-large" class="profile-pic" src="./image/user.png" alt="Profile Picture"
+                style="border-bottom: 2px solid #112E53; padding-bottom: 8px;" />
+            <input type="file" id="profileInput" accept="image/*" style="margin-top: 10px;" />
+
+            <!-- ช่องกรอกข้อมูล -->
+            <div class="info">
+                <label for="nameInput">Name:</label>
+                <input type="text" id="nameInput" />
+            </div>
+            <div class="info">
+                <label for="emailInput">Email:</label>
+                <input type="email" id="emailInput" />
+            </div>
+
+            <div class="card-buttons">
+                <button id="cancelBtn" class="logout-btn">Cancel</button>
+                <button id="saveBtn" class="amount-btn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/navbar.js"></script>
+    <script>
+        window.addEventListener("DOMContentLoaded", async () => {
+            const profilePic = document.getElementById("profile-img-large");
+            const nameInput = document.getElementById("nameInput");
+            const emailInput = document.getElementById("emailInput");
+
+            try {
+                const res = await fetch("/check-session", { credentials: "include" });
+                const data = await res.json();
+
+                if (!data.loggedIn) {
+                    window.location.href = "/";
+                    return;
+                }
+
+                // แสดงข้อมูลเดิม
+                document.getElementById("username").textContent = data.user.name;
+                profilePic.src = data.user.profile || "./image/user.png";
+                nameInput.value = data.user.name;
+                emailInput.value = data.user.email;
+
+            } catch (err) {
+                console.error("Error loading user:", err);
+            }
+
+            // Preview รูป
+            const profileInput = document.getElementById("profileInput");
+            profileInput.addEventListener("change", () => {
+                const file = profileInput.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = () => (profilePic.src = reader.result);
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // ปุ่ม Cancel
+            document.getElementById("cancelBtn").addEventListener("click", () => {
+                window.location.href = "/user_profile";
+            });
+
+            // ปุ่ม Save
+            document.getElementById("saveBtn").addEventListener("click", async () => {
+                const formData = new FormData();
+                formData.append("name", nameInput.value);
+                formData.append("email", emailInput.value);
+                if (profileInput.files[0]) {
+                    formData.append("profile", profileInput.files[0]);
+                }
+
+                try {
+                    const res = await fetch("/user_edit", {
+                        method: "POST",
+                        body: formData,
+                        credentials: "include",
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        alert("Profile updated successfully!");
+                        window.location.href = "/user_profile";
+                    } else {
+                        alert(data.message || "Update failed");
+                    }
+                } catch (err) {
+                    console.error("Error updating profile:", err);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
