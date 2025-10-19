@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>admin | Game Shop</title>
+    <title>Admin | Game Shop</title>
     <link rel="stylesheet" href="./css/user_style.css" />
 </head>
 
 <body>
 
-    <!-- Navbar -->
+    <!-- ======================= NAVBAR ======================= -->
     <div class="navbar">
         <div class="navbar-left">
             <img src="./image/logo1.png" alt="logo" class="logo" />
@@ -19,55 +19,48 @@
 
         <div class="navbar-right">
             <a href="/admin_main">Store</a>
-            <a href="/library">Library</a>
+            <a href="/admin_code">Code</a>
             <a href="/admin_profile" id="username">User</a>
             <div class="user-info">
-                <img id="profile-pic" src="" alt="Profile Picture" />
+                <img id="profile-pic" src="./image/profile_icon.png" alt="Profile Picture" />
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================= MAIN CONTENT ======================= -->
+    <div class="content" style="width: 90%; max-width: 1100px; margin-top: 20px;">
+
+        <!-- Popular Game Section -->
+        <section class="popular" style="background: black; border-radius: 10px; padding: 20px;">
+            <h2 style="color: white;">Popular Games</h2>
+            <div id="popularList" style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+                <!-- โหลดเกมยอดนิยมจากฐานข้อมูล -->
+            </div>
+        </section>
+
+        <!-- Game Management Section -->
+        <section class="game-section" style="margin-top: 30px;">
+            <div class="game-header" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <h2 style="margin-right: 10px;">Game</h2>
+                <label>Search</label>
+                <input type="text" id="searchInput" placeholder="Search game..." style="width:150px;">
+                <label>Type</label>
+                <select id="filterType" style="width:150px; height: 30px;">
+                    <option value="">All</option>
+                </select>
+                <a href="/admin_addgame" style="color: #00ff88; font-weight: bold; text-decoration: none;">Add Game</a>
             </div>
 
-            <script src="./js/navbar.js"></script>
-            <script>
-                window.addEventListener("DOMContentLoaded", async () => {
-                    try {
-                        // เช็ค session
-                        const res = await fetch("/check-session", { credentials: "include" });
-                        const data = await res.json();
+            <!-- Game List -->
+            <div id="gameList" style="display: flex; flex-wrap: wrap; margin-top: 15px;">
+                <!-- โหลดเกมแบบ dynamic -->
+            </div>
+        </section>
+        
+    </div>
 
-                        if (!data.loggedIn) {
-                            // ไม่ login → กลับหน้า login
-                            window.location.href = "/";
-                            return;
-                        }
-
-                        // แสดงข้อมูล user
-                        const profilePic = document.getElementById("profile-pic");
-                        const namePic = document.getElementById("username");
-                        profilePic.src = data.user.profile || "./image/user.png"; // default
-                        namePic.textContent = data.user.name || "User";
-
-                        // ถ้ามี lastPage เก็บไว้ → ไปหน้าสุดท้าย
-                        const lastPage = localStorage.getItem("lastPage");
-                        if (lastPage && lastPage !== window.location.pathname) {
-                            window.location.href = lastPage;
-                        }
-
-                        // Logout
-                        const logoutBtn = document.getElementById("logoutBtn");
-                        if (logoutBtn) {
-                            logoutBtn.addEventListener("click", async () => {
-                                await fetch("/logout", { method: "POST", credentials: "include" });
-                                localStorage.removeItem("lastPage"); // ล้าง lastPage
-                                window.location.href = "/";
-                            });
-                        }
-
-                    } catch (err) {
-                        console.error("Error fetching user info:", err);
-                    }
-                });
-
-                // เก็บหน้าปัจจุบันก่อนปิด/refresh
-                window.addEventListener("beforeunload", () => {
-                });
-            </script>
+    <script src="./js/navbar.js"></script>
+    <script src="./js/admin_main.js"></script>
 </body>
+
+</html>

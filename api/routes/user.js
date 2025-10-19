@@ -8,86 +8,114 @@ const publicPath = path.join(__dirname, "..", "..", "public");
 
 // ================== Middleware ==================
 function isLoggedIn(req, res, next) {
-    console.log("Session user:", req.session.user);
-    if (req.session.user) next();
-    else res.redirect("/");
+  console.log("Session user:", req.session.user);
+  if (req.session.user) next();
+  else res.redirect("/");
 }
 function isAdmin(req, res, next) {
-    if (req.session.user && req.session.user.role === "admin") next();
-    else res.redirect("/user_main"); // ถ้าไม่ใช่ admin → ไปหน้า user_main
+  if (req.session.user && req.session.user.role === "admin") next();
+  else res.redirect("/user_main"); // ถ้าไม่ใช่ admin → ไปหน้า user_main
 }
 
 function isUser(req, res, next) {
-    if (req.session.user && req.session.user.role === "user") next();
-    else res.redirect("/admin_main"); // ถ้าไม่ใช่ user → ไปหน้า admin_main
+  if (req.session.user && req.session.user.role === "user") next();
+  else res.redirect("/admin_main"); // ถ้าไม่ใช่ user → ไปหน้า admin_main
 }
 
 // ------------------ หน้า HTML ------------------
 router.get("/", (req, res) => {
-    res.sendFile(path.join(publicPath, "login.html"));
+  res.sendFile(path.join(publicPath, "login.html"));
 });
 router.get("/register", (req, res) => {
-    res.sendFile(path.join(publicPath, "register.html"));
+  res.sendFile(path.join(publicPath, "register.html"));
 });
 
 // ใช้ middleware isLoggedIn กับ route ที่ต้อง login
-router.get("/user_main", isLoggedIn, isUser,(req, res) => {
-    res.sendFile(path.join(publicPath, "user_main.html"));
+router.get("/user_main", isLoggedIn, isUser, (req, res) => {
+  res.sendFile(path.join(publicPath, "user_main.html"));
 });
-router.get("/admin_main", isLoggedIn, isAdmin,(req, res) => {
-    if (req.session.user.role === "admin") {
-        res.sendFile(path.join(publicPath, "admin_main.html"));
-    } else {
-        res.redirect("/user_main");
-    }
+router.get("/admin_main", isLoggedIn, isAdmin, (req, res) => {
+  if (req.session.user.role === "admin") {
+    res.sendFile(path.join(publicPath, "admin_main.html"));
+  } else {
+    res.redirect("/user_main");
+  }
+});
+// ------------------ admin ------------------
+router.get("/admin_profile", isLoggedIn, (req, res) => {
+  res.sendFile(path.join(publicPath, "admin_profile.html"));
+});
+router.get("/admin_addgame", isLoggedIn, (req, res) => {
+  res.sendFile(path.join(publicPath, "admin_addgame.html"));
+});
+router.get("/admin_code", isLoggedIn, (req, res) => {
+  res.sendFile(path.join(publicPath, "admin_code.html"));
+});
+router.get("/admin_code", isLoggedIn, (req, res) => {
+  res.sendFile(path.join(publicPath, "admin_code.html"));
+});
+router.get("/admin_viewgame", isLoggedIn, (req, res) => {
+  res.sendFile(path.join(publicPath, "admin_viewgame.html"));
+});
+router.get("/admin_editgame", isLoggedIn, (req, res) => {
+  res.sendFile(path.join(publicPath, "admin_editgame.html"));
 });
 
-router.get("/admin_profile", isLoggedIn, (req, res) => {
-    res.sendFile(path.join(publicPath, "admin_profile.html"));
-});
+
+// ------------------ user ------------------
 router.get("/user_profile", isLoggedIn, (req, res) => {
-    res.sendFile(path.join(publicPath, "user_profile.html"));
+  res.sendFile(path.join(publicPath, "user_profile.html"));
 });
 router.get("/user_edit", isLoggedIn, (req, res) => {
-    res.sendFile(path.join(publicPath, "user_edit.html"));
+  res.sendFile(path.join(publicPath, "user_edit.html"));
 });
+router.get("/user_amount", isLoggedIn, (req, res) => {
+  res.sendFile(path.join(publicPath, "user_amount.html"));
+});
+router.get("/user_game_detail", isLoggedIn, (req, res) => {
+  res.sendFile(path.join(publicPath, "user_game_detail.html"));
+});
+router.get("/user_cart", isLoggedIn, (req, res) => {
+  res.sendFile(path.join(publicPath, "user_cart.html"));
+});
+
 
 // ------------------ API LOGIN ------------------
-router.post("/login", (req, res) => {
-  const { email, password } = req.body;
+  router.post("/login", (req, res) => {
+    const { email, password } = req.body;
 
-  pool.query(
-    "SELECT * FROM users WHERE email = ? AND password = ?",
-    [email, password],
-    (err, results) => {
-      if (err) return res.status(500).json({ error: err.message });
+    pool.query(
+      "SELECT * FROM users WHERE email = ? AND password = ?",
+      [email, password],
+      (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
 
-      if (results.length > 0) {
-        const user = results[0];
+        if (results.length > 0) {
+          const user = results[0];
+          req.session.userId = user.user_id;       // 🔑 สำคัญสำหรับ cart.js
+          req.session.userName = user.name;        // optional
+          req.session.user = {                     // สำหรับใช้งานหน้า profile, navbar, etc.
+            name: user.name,
+            email: user.email,
+            password: user.password,
+            role: user.role,
+            profile: user.profile,
+            wallet_balance: user.wallet_balance
 
-        // เก็บ session user ทุกค่าที่มีใน table
-        req.session.user = {
-          user_id: user.user_id,
-          name: user.name,
-          email: user.email,
-          password: user.password,
-          role: user.role,
-          profile: user.profile,
-          wallet_balance: user.wallet_balance
-        };
+          };
 
-        // ส่งหน้าไปตาม role
-        if (user.role === "admin") {
-          res.json({ success: true, redirect: "/admin_main" });
+          // ส่งหน้าไปตาม role
+          if (user.role === "admin") {
+            res.json({ success: true, redirect: "/admin_main" });
+          } else {
+            res.json({ success: true, redirect: "/user_main" });
+          }
         } else {
-          res.json({ success: true, redirect: "/user_main" });
+          res.json({ success: false, message: "Invalid email or password" });
         }
-      } else {
-        res.json({ success: false, message: "Invalid email or password" });
       }
-    }
-  );
-});
+    );
+  });
 
 
 // ------------------ Multer สำหรับ upload profile ------------------
@@ -152,32 +180,89 @@ router.get("/user_edit", (req, res) => {
 
 // ====================== UPDATE USER INFO ======================
 router.post("/user_edit", upload.single("profile"), (req, res) => {
-    if (!req.session.user) return res.status(401).json({ success: false, message: "Unauthorized" });
+  if (!req.session.user) return res.status(401).json({ success: false, message: "Unauthorized" });
 
-    const userId = req.session.user.user_id; // ดึงจาก session
-    const { name, email } = req.body;
-    const profile = req.file ? "/uploads/" + req.file.filename : req.session.user.profile;
+  const userId = req.session.user.user_id; // ดึงจาก session
+  const { name, email } = req.body;
+  const profile = req.file ? "/uploads/" + req.file.filename : req.session.user.profile;
 
-    if (!name || !email) {
-        return res.status(400).json({ success: false, message: "Missing required fields" });
+  if (!name || !email) {
+    return res.status(400).json({ success: false, message: "Missing required fields" });
+  }
+
+  pool.query(
+    "UPDATE users SET name = ?, email = ?, profile = ? WHERE user_id = ?",
+    [name, email, profile, userId],
+    (err, results) => {
+      if (err) return res.status(500).json({ success: false, message: err.message });
+
+      // อัปเดต session ด้วยข้อมูลใหม่
+      req.session.user.name = name;
+      req.session.user.email = email;
+      req.session.user.profile = profile;
+
+      res.json({ success: true });
     }
-
-    pool.query(
-        "UPDATE users SET name = ?, email = ?, profile = ? WHERE user_id = ?",
-        [name, email, profile, userId],
-        (err, results) => {
-            if (err) return res.status(500).json({ success: false, message: err.message });
-
-            // อัปเดต session ด้วยข้อมูลใหม่
-            req.session.user.name = name;
-            req.session.user.email = email;
-            req.session.user.profile = profile;
-
-            res.json({ success: true });
-        }
-    );
+  );
 });
 
+// GET transaction history
+router.get("/", async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.json({ success: false, message: "User not logged in" });
+    }
+
+    const userId = req.session.userId;
+
+    const [transactions] = await pool.promise().query(
+      "SELECT * FROM transactions WHERE user_id = ? ORDER BY date DESC",
+      [userId]
+    );
+
+    res.json({ success: true, transactions });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+router.get("/transactions", async (req, res) => {
+  if (!req.session.userId) return res.json({ success: false, message: "User not logged in" });
+
+  const [transactions] = await pool.promise().query(
+    "SELECT * FROM transactions WHERE user_id = ? ORDER BY date DESC",
+    [req.session.userId]
+  );
+
+  res.json({ success: true, transactions });
+});
+router.post("/topup", async (req, res) => {
+    console.log("Session:", req.session);
+    const { amount } = req.body;
+    if (!req.session.userId) return res.json({ success: false, message: "User not logged in" });
+
+  await pool.promise().query(
+    "UPDATE users SET wallet_balance = wallet_balance + ? WHERE user_id = ?",
+    [amount, req.session.userId]
+  );
+
+  await pool.promise().query(
+    "INSERT INTO transactions (user_id, type, amount, description) VALUES (?, 'topup', ?, 'เติมเงิน')",
+    [req.session.userId, amount]
+  );
+
+  res.json({ success: true, message: `Top-up ${amount} ฿ completed!` });
+});
+
+router.get("/users", async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT user_id, name, email FROM users WHERE role='user'");
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 // ------------------ LOGOUT ------------------
 // logout API (POST)
 router.post("/logout", (req, res) => {

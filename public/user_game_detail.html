@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Detail | Game Shop</title>
+  <link rel="stylesheet" href="./css/game_style.css" />
+</head>
+
+<body>
+  <!-- ============= NAVBAR ============= -->
+  <div class="navbar">
+    <div class="navbar-left">
+      <img src="./image/logo1.png" alt="logo" class="logo" />
+      <h1>Game Shop</h1>
+    </div>
+
+    <div class="navbar-right">
+      <a href="/user_main">Store</a>
+      <a href="/library">Library</a>
+      <a href="/user_profile" id="username">User</a>
+      <div class="user-info">
+        <img id="profile-pic" src="./image/user.png" alt="Profile Picture" />
+      </div>
+    </div>
+  </div>
+
+  <!-- ============= GAME DETAIL CONTENT ============= -->
+  <div class="game-detail-container">
+    <button id="backBtn" class="back-btn">← Back</button>
+
+    <div class="game-detail-card">
+      <h2>Game Detail</h2>
+
+      <div class="game-detail-layout">
+        <!-- รูปเกม -->
+        <div class="game-image">
+          <img id="gameImage" src="./image/default_game.png" alt="Game Image">
+        </div>
+
+        <!-- ข้อมูลเกม -->
+        <div class="game-data">
+          <p><strong>Name:</strong> <span id="gameName">Game Name</span></p>
+          <p><strong>Type:</strong> <span id="gameType">Action</span></p>
+          <p><strong>Release Date:</strong> <span id="gameDate">-</span></p>
+          <p><strong>Price:</strong> <span id="gamePrice">0.00 ฿</span></p>
+
+          <!-- ปุ่ม Add to Cart -->
+          <button id="addCartBtn" class="save-btn">💰 Add to Cart</button>
+
+          <div class="description">
+            <p><strong>Description:</strong></p>
+            <div class="detail-box">
+              <p id="gameDesc">-</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./js/navbar.js"></script>
+  <script src="./js/user_game_detail.js"></script>
+</body>
+
+</html>

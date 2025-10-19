@@ -3,9 +3,9 @@ router.get("/check-session", (req, res) => {
     return res.json({ loggedIn: false });
   }
 
-  const userId = req.session.user.id;
+  const userId = req.session.userId; // ✅ ใช้ userId ที่ login เก็บไว้
 
-  pool.query("SELECT name, profile FROM users WHERE id = ?", [userId], (err, results) => {
+  pool.query("SELECT name, profile FROM users WHERE user_id = ?", [userId], (err, results) => {
     if (err) return res.status(500).json({ loggedIn: false, message: err.message });
     if (results.length === 0) return res.json({ loggedIn: false });
 

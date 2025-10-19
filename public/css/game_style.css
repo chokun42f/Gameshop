@@ -1,0 +1,435 @@
+/* ======================= BODY ======================= */
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(#7BB4FF, #112E53);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+/* ======================= NAVBAR ======================= */
+.navbar {
+  display: flex;
+  align-items: center;
+  height: 70px;
+  width: 100%;
+  padding: 0 20px;
+  background: linear-gradient(to bottom, #D9D9D9 0%, #A6A6A6 100%);
+  justify-content: space-between;
+  color: black;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* โลโก้และชื่อร้าน */
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-left .logo {
+  width: 85px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.navbar-left h1 {
+  color: black;
+  font-size: 26px;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* ส่วนขวาของ navbar */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.navbar-right a {
+  color: black;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.navbar-right a::after {
+  content: "";
+  display: block;
+  height: 2px;
+  width: 0%;
+  background: #001AFF;
+  transition: width 0.3s ease;
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+}
+
+.navbar-right a:hover {
+  color: #001AFF;
+}
+
+.navbar-right a:hover::after {
+  width: 100%;
+}
+
+/* User Info */
+.user-info span {
+  font-weight: bold;
+  color: black;
+  cursor: pointer; /* กดชื่อผู้ใช้ได้ */
+}
+
+.user-info img {
+  width: 40px;
+  height: 40px;
+  border-radius: 100%;
+  object-fit: cover;
+  border: 2px solid #444;
+  cursor: default; /* รูปกดไม่ได้ */
+  background-color: #fff;
+}
+
+/* ======================= PROFILE CARD ======================= */
+.profile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 70px);
+  flex-direction: column;
+}
+
+.profile-card {
+  position: relative; /* เพื่อให้ปุ่ม Edit อยู่ด้านบนขวา */
+  background: white;
+  padding: 40px 30px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.25);
+  width: 350px;
+  transition: transform 0.3s ease;
+}
+
+.profile-card:hover {
+  transform: translateY(-5px);
+}
+
+/* ปุ่ม Edit ด้านบนขวา */
+.card-header {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+
+.edit-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: none;
+  background: none;
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
+  color: #001AFF;
+  padding: 0;
+}
+
+.edit-btn .edit-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* รูปโปรไฟล์ใหญ่ */
+.profile-pic {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+  border: 2px solid #ccc;
+}
+
+/* ข้อมูลชื่อ อีเมล role */
+.info {
+  text-align: left;
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+/* ======================= CARD BUTTONS ======================= */
+.card-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 25px;
+}
+
+.amount-btn {
+  background-color: #B9FFBC;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.amount-btn:hover {
+  background-color: #9fffad;
+}
+
+.logout-btn {
+  background-color: #FF9F9F;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.logout-btn:hover {
+  background-color: #FF7F7F;
+}
+
+/* ======================= FORM INPUTS (ถ้ามี) ======================= */
+label {
+  display: block;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #888;
+  border-radius: 5px;
+}
+
+/* ======================= GAME CARDS ======================= */
+
+.game-detail-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 20px;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: black;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.game-detail-card {
+  background-color: #000;
+  color: #fff;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+.game-detail-card h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 22px;
+}
+
+/* === Layout หลัก === */
+.game-detail-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 30px;
+}
+
+/* รูปเกม */
+.game-image {
+  display: flex;
+  flex-direction: column; /* จัดแนวให้รูปอยู่บน input */
+  align-items: center; /* จัดให้อยู่ตรงกลาง */
+  gap: 10px; /* เพิ่มระยะห่างระหว่างรูปกับปุ่มเลือกไฟล์ */
+}
+
+.game-image img {
+  width: 300px;
+  height: 300px;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+#imageUpload {
+  cursor: pointer;
+}
+
+/* ส่วนข้อมูล */
+.game-data {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.game-data .row {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.game-data p {
+  margin: 5px 0;
+  font-size: 16px;
+}
+
+/* ปุ่ม Edit */
+.edit-btn {
+  align-self: flex-start;
+  background-color: #B9FFBC;
+  color: black;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.edit-btn:hover {
+  background-color: #9fffad;
+  transform: scale(1.05);
+}
+
+/* Description */
+.description {
+  margin-top: 10px;
+}
+
+.detail-box {
+  background-color: #d9d9d9;
+  color: black;
+  border-radius: 8px;
+  padding: 10px;
+  min-height: 70px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+.save-btn {
+  background-color: #b9ffbc;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.save-btn:hover {
+  background-color: #9fffad;
+}
+
+.delete-btn {
+  background-color: #ff9f9f;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.delete-btn:hover {
+  background-color: #ff7f7f;
+}
+
+/* input & textarea */
+input, textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 5px;
+  border: 1px solid #aaa;
+  font-size: 14px;
+}
+/* การ์ดหลักของ cart */
+.cart-container.card {
+    background: linear-gradient(to bottom, #D9D9D9 0%, #A6A6A6 100%);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 900px;
+    margin: 30px auto;
+}
+
+/* การ์ดแต่ละเกม */
+.cart-list .cart-card {
+    display: flex;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+/* รูปเกมด้านซ้าย */
+.cart-card .game-image {
+    flex: 0 0 150px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 10px;
+}
+
+.cart-card .game-image img {
+    width: 130px;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+/* ข้อมูลเกมด้านขวา */
+.cart-card .game-info {
+    flex: 1;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* ปุ่มลบ/แก้ไข */
+.cart-card .cart-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.cart-card button {
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.cart-card .delete-btn {
+    background-color: #FF9F9F;
+}
+
+.cart-card button:hover {
+    opacity: 0.85;
+}
+#cartAmountDisplay {
+    position: fixed; /* อยู่บนสุดตลอด */
+    top: 80px; /* ใต้ navbar */
+    left: 20px;
+    background-color: rgba(255,255,255,0.8); /* ให้เห็นชัด */
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 18px;
+    z-index: 1000;
+}

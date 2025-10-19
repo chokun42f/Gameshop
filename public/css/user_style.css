@@ -3,7 +3,7 @@ body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
   background: linear-gradient(#7BB4FF, #112E53);
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -208,4 +208,52 @@ input {
   margin-top: 5px;
   border: 1px solid #888;
   border-radius: 5px;
+}
+
+/* ======================= GAME CARDS ======================= */
+
+.game-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.game-card {
+  background-color: #d9d9d9;
+  width:  190px;             /* ขนาดการ์ดตายตัว */
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between; /* รูปอยู่ตรงกลางแนวตั้ง, ชื่ออยู่ด้านล่าง */
+  border-radius: 10px;
+  margin: 10px;
+  padding: 5px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.game-card .game-img {
+  width: 100%;          /* ความกว้างตามต้องการ */
+  max-height: 160px;   /* สูงสุดให้พอดีกับการ์ด (250 - ชื่อ - padding) */
+  object-fit: contain; /* รักษาสัดส่วน ไม่ตัดรูป */
+  border-radius: 8px;
+  display: block;
+  margin: 0 auto;           /* จัดกลางแนวนอน */
+}
+
+.game-card h3 {
+  font-size: 14px;
+  text-align: center;
+  margin: 0;
+  line-height: 1.2;
+  flex-shrink: 0;           /* ป้องกันชื่อถูกย่อ */
+  bottom: 5px;              /* ติดขอบล่างการ์ด */
+}
+
+.game-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0,0,0,0.3);
 }

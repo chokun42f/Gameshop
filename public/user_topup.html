@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top-up Wallet | Game Shop</title>
+    <link rel="stylesheet" href="./css/user_style.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="navbar-left">
+            <img src="./image/logo1.png" alt="logo" class="logo" />
+            <h1>Game Shop</h1>
+        </div>
+
+        <div class="navbar-right">
+            <a href="/user_main">Store</a>
+            <a href="/library">Library</a>
+            <a href="/profile" id="username">User</a>
+            <div class="user-info">
+                <img id="profile-pic" src="./image/user.png" alt="Profile Picture" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Wallet Card -->
+    <div class="profile-container">
+        <div class="profile-card">
+            <h2>Wallet Balance</h2>
+            <div id="walletBalance" class="wallet-balance">0 ฿</div>
+
+            <h3>Top-up Amount</h3>
+            <div class="amount-btn-group">
+                <button data-amount="100">100 ฿</button>
+                <button data-amount="200">200 ฿</button>
+                <button data-amount="300">300 ฿</button>
+            </div>
+            <input type="number" id="customAmount" placeholder="กรอกจำนวนเงินเอง" min="1">
+
+            <button id="confirmTopup">เติมเงิน</button>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="./js/user_topup.js"></script>
+</body>
+
+</html>

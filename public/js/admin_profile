@@ -1,0 +1,109 @@
+window.addEventListener("DOMContentLoaded", async () => {
+    try {
+        // ✅ เช็ค session
+        const res = await fetch("/check-session", {
+            method: "GET",
+            credentials: "include"
+        });
+        const data = await res.json();
+
+        if (!data.loggedIn) {
+            window.location.href = "/";
+            return;
+        }
+
+        // ✅ แสดงข้อมูลผู้ใช้
+        document.getElementById("username").textContent = data.user.name || "User";
+        document.getElementById("name").textContent = data.user.name || "User";
+        document.getElementById("email").textContent = data.user.email || "";
+
+        const profilePath = data.user.profile && data.user.profile !== ""
+            ? data.user.profile
+            : "./image/user.png";
+
+        // ✅ แสดงรูปโปรไฟล์
+        const profilePic = document.getElementById("profile-pic");
+        const profilePreview = document.getElementById("profilePreview");
+        const profileLarge = document.getElementById("profile-img-large");
+
+        if (profilePic) profilePic.src = profilePath;
+        if (profilePreview) profilePreview.src = profilePath;
+        if (profileLarge) profileLarge.src = profilePath;
+
+        // ✅ ปุ่ม Logout
+        const logoutBtn = document.getElementById("logoutBtn");
+        if (logoutBtn) {
+            logoutBtn.addEventListener("click", async () => {
+                await fetch("/logout", { method: "POST", credentials: "include" });
+                localStorage.removeItem("lastPage");
+                window.location.href = "/";
+            });
+        }
+
+        // ✅ ปุ่ม Upload Profile
+        const uploadBtn = document.getElementById("uploadBtn");
+        const profileInput = document.getElementById("profileInput");
+
+        if (uploadBtn && profileInput) {
+            uploadBtn.addEventListener("click", () => profileInput.click());
+
+            profileInput.addEventListener("change", () => {
+                const file = profileInput.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        if (profilePreview) profilePreview.src = reader.result;
+                    };
+                    reader.readAsDataURL(file);
+
+                    const formData = new FormData();
+                    formData.append("profile", file);
+
+                    fetch("/update-profile", {
+                        method: "POST",
+                        body: formData,
+                        credentials: "include"
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) alert("Profile updated!");
+                            else alert("Upload failed: " + data.message);
+                        })
+                        .catch(err => console.error("Upload error:", err));
+                }
+            });
+        }
+
+        // ✅ ปุ่ม Manage Users (ไปหน้า admin_userman.html)
+        const manageBtn = document.getElementById("manageUsersBtn");
+        if (manageBtn) {
+            if (data.user.role === "admin") {
+                manageBtn.style.display = "inline-block";
+                manageBtn.addEventListener("click", () => {
+                    window.location.href = "/admin_userman.html";
+                });
+            } else {
+                manageBtn.style.display = "none"; // ถ้าไม่ใช่ admin ซ่อนปุ่ม
+            }
+        }
+
+        // ✅ Search Input (กรณีอยู่ในหน้า main)
+        const searchInput = document.getElementById("searchInput");
+        if (searchInput) {
+            searchInput.addEventListener("input", () => {
+                const keyword = searchInput.value.trim();
+                const filterType = document.getElementById("filterType")?.value || "";
+                if (typeof loadGames === "function") {
+                    loadGames(filterType, keyword);
+                }
+            });
+        }
+        document.getElementById('manageUsersBtn').addEventListener('click', () => {
+            window.location.href = '/admin_userman.html';
+        });
+
+    } catch (err) {
+        console.error("Error fetching user info:", err);
+    }
+
+});

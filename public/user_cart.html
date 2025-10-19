@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User | Game Shop</title>
+    <link rel="stylesheet" href="./css/game_style.css" />
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="navbar-left">
+            <img src="./image/logo1.png" alt="logo" class="logo" />
+            <h1>Game Shop</h1>
+        </div>
+
+        <div class="navbar-right">
+            <a href="/user_main">Store</a>
+            <a href="/library">Library</a>
+            <a href="/user_profile" id="username">User</a>
+            <div class="user-info">
+                <img id="profile-pic" src="" alt="Profile Picture" />
+            </div>
+        </div>
+    </div>
+
+    <div id="cartAmountDisplay">
+        Amount: <span id="cartAmount">0 THB</span>
+    </div>
+    <div class="cart-container card">
+        <h2>Cart 🛒</h2>
+        <div id="cartList" class="cart-list">
+            <!-- แสดงรายการเกมแบบ card -->
+        </div>
+
+        <div class="cart-summary">
+            <p>Shopping Cart</p>
+            <p>Subtotal : <span id="subtotal">0 THB</span></p>
+            <p>Discount : <input type="text" id="discount" value="0"></p>
+            <hr>
+            <p>Total : <span id="total">0 THB</span></p>
+            <button id="checkoutBtn">Checkout</button>
+        </div>
+    </div>
+
+
+    <script src="./js/navbar.js"></script>
+    <script src="./js/user_cart.js"></script>
+</body>
+
+</html>

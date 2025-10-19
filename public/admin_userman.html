@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Users | Game Shop</title>
+  <link rel="stylesheet" href="./css/admin_userman.css">
+</head>
+<body>
+  <div class="navbar">
+    <img src="./image/logo.png" class="logo">
+    <h2>Game Shop</h2>
+    <div class="nav-links">
+      <a href="admin_store.html">Store</a>
+      <a href="admin_code.html">Code</a>
+      <a href="admin_userman.html" class="active">User</a>
+    </div>
+    <div class="profile-icon">
+      <img src="./image/profile_icon.png">
+    </div>
+  </div>
+
+  <div class="content">
+    <h1>👥 User List</h1>
+    <table id="userTable">
+      <thead>
+        <tr>
+          <th>User Name</th>
+          <th>Email</th>
+          <th>Games</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Data will be filled by JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <script src="./js/admin_userman.js"></script>
+</body>
+</html>

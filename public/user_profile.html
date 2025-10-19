@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Profile | Game Shop</title>
+    <title>User Profile | Game Shop</title>
     <link rel="stylesheet" href="./css/user_style.css" />
 </head>
 
@@ -37,64 +37,23 @@
             </div>
 
             <h2>Profile</h2>
-            <img id="profile-img-large" class="profile-pic" src="./image/user.png" alt="Profile Picture" />
+
+            <!-- Profile Preview -->
+            <img id="profilePreview" class="profile-pic" src="./image/user.png" alt="Profile Picture" />
+
             <div class="info"><strong>Name:</strong> <span id="name">User</span></div>
             <div class="info"><strong>Email:</strong> <span id="email">user@example.com</span></div>
 
             <div class="card-buttons">
-                <button class="amount-btn">Amount</button>
+                <button id="amountBtn" class="amount-btn">Amount</button>
                 <button id="logoutBtn" class="logout-btn">Logout</button>
             </div>
         </div>
     </div>
 
-    <!-- Script -->
-     <script src="./js/navbar.js"></script>
-    <script>
-        window.addEventListener("DOMContentLoaded", async () => {
-            try {
-                // เช็ค session
-                const res = await fetch("/check-session", {
-                    method: "GET",
-                    credentials: "include"
-                });
-                const data = await res.json();
-
-                if (!data.loggedIn) {
-                    // ไม่ login → กลับหน้า login
-                    window.location.href = "/";
-                    return;
-                }
-
-                // แสดงข้อมูลผู้ใช้
-                document.getElementById("username").textContent = data.user.name || "User";
-                document.getElementById("name").textContent = data.user.name || "User";
-                document.getElementById("email").textContent = data.user.email || "";
-
-                const profilePath = data.user.profile && data.user.profile !== ""
-                    ? data.user.profile
-                    : "./image/user.png"; // รูป default
-
-                document.getElementById("profile-pic").src = profilePath;
-                document.getElementById("profile-img-large").src = profilePath;
-
-
-                // Logout
-                document.getElementById("logoutBtn").addEventListener("click", async () => {
-                    await fetch("/logout", {
-                        method: "POST", // server รับ POST
-                        credentials: "include"
-                    });
-                    localStorage.removeItem("lastPage"); // ล้าง lastPage
-                    window.location.href = "/"; // กลับหน้า login
-                });
-
-            } catch (err) {
-                console.error("Error fetching user info:", err);
-            }
-        });
-    </script>
-
+    <!-- Scripts -->
+    <script src="./js/navbar.js"></script>
+    <script src="./js/user_profile.js"></script>
 </body>
 
 </html>

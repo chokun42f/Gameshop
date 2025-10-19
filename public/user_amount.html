@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet | Game Shop</title>
+    <link rel="stylesheet" href="./css/user_style.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="navbar-left">
+            <img src="./image/logo1.png" alt="logo" class="logo" />
+            <h1>Game Shop</h1>
+        </div>
+        <div class="navbar-right">
+            <a href="/user_main">Store</a>
+            <a href="/library">Library</a>
+            <a href="/user_profile" id="username">User</a>
+            <div class="user-info">
+                <img id="profile-pic" src="./image/user.png" alt="Profile Picture" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Wallet Card -->
+    <div class="profile-container">
+        <div class="profile-card">
+            <!-- ยอดเงิน -->
+            <h2>Wallet Balance</h2>
+            <div id="walletBalance" class="wallet-balance">0.00 ฿</div>
+
+            <!-- ปุ่มเติมเงิน -->
+            <div class="card-buttons">
+                <a href="/user_topup.html" id="topupBtn" class="amount-btn">เติมเงิน</a>
+            </div>
+            <!-- ประวัติรายการ -->
+            <h3>Transaction History</h3>
+            <table class="transaction-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Amount(฿)</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionBody">
+                    <!-- ข้อมูล transaction จะถูกเติมจาก JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="./js/navbar.js"></script>
+    <script src="./js/wallet.js"></script>
+</body>
+
+</html>
