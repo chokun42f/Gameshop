@@ -3,6 +3,8 @@ const router = express.Router();
 const path = require("path");
 const pool = require("../../dbconn");
 const multer = require("multer");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("../../config/cloudinary");
 
 // ดึงเกมทั้งหมด หรือ filter ตาม type / search
 router.get("/", async (req, res) => {

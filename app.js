@@ -39,6 +39,8 @@ app.use("/api/user/wallet", walletRouter);
 const transactionsRouter = require("./api/routes/transactions");
 app.use("/api/transactions", transactionsRouter);
 
+const libraryRouter = require("./api/routes/library");
+app.use("/api/library", libraryRouter);
 
 // ✅ Test route
 app.get("/hello", (req, res) => {
