@@ -13,14 +13,12 @@ const codeRouter = require("./api/routes/code");
 const app = express();
 
 // ------------------- SESSION -------------------
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "gameshop-secret-key",
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false, maxAge: 7 * 24 * 60 * 60 * 1000 }, // 7 วัน
-  })
-);
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false, maxAge: 7 * 24 * 60 * 60 * 1000 },
+}));
 
 // ------------------- JSON / FORM -------------------
 app.use(express.urlencoded({ extended: true }));
