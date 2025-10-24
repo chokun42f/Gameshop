@@ -2,6 +2,9 @@ const express = require("express");
 const path = require("path");
 const session = require("express-session");
 
+const RedisStore = require('connect-redis')(session);
+const redisClient = require('./redis-client');
+
 const userRouter = require("./api/routes/user");
 const gameRouter = require("./api/routes/game");
 const cartRouter = require("./api/routes/cart");
@@ -12,14 +15,13 @@ const transactionsRouter = require("./api/routes/transactions");
 const app = express();
 
 // ✅ Session
-app.use(
-  session({ 
-    secret: "gameshop-secret-key",
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false, maxAge: 7 * 24 * 60 * 60 * 1000 },
-  })
-);
+app.use(session({
+  store: new RedisStore({ client: redisClient }),
+  secret: 'gameshop-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false, maxAge: 7*24*60*60*1000 }
+}));
 
 
 // ✅ JSON และ form
