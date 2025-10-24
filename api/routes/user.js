@@ -78,7 +78,9 @@ router.get("/user_game_detail", isLoggedIn, (req, res) => {
 router.get("/user_cart", isLoggedIn, (req, res) => {
   res.sendFile(path.join(publicPath, "user_cart.html"));
 });
-
+router.get("/user_library", isLoggedIn, (req, res) => {
+  res.sendFile(path.join(publicPath, "user_library.html"));
+});
 
 // ------------------ API LOGIN ------------------
   router.post("/login", (req, res) => {
@@ -95,6 +97,7 @@ router.get("/user_cart", isLoggedIn, (req, res) => {
           req.session.userId = user.user_id;       // 🔑 สำคัญสำหรับ cart.js
           req.session.userName = user.name;        // optional
           req.session.user = {                     // สำหรับใช้งานหน้า profile, navbar, etc.
+            user_id: user.user_id,                  
             name: user.name,
             email: user.email,
             password: user.password,
@@ -263,6 +266,21 @@ router.get("/users", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
+router.get("/api/codes", isLoggedIn, isAdmin, async (req, res) => {
+  try {
+    const [rows] = await pool.promise().query(`
+      SELECT code_id, code, discount_type, discount_value, max_uses, amount, used_count, created_at
+      FROM codes
+      ORDER BY created_at DESC
+    `);
+    res.json(rows);
+  } catch (err) {
+    console.error("Error fetching codes:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 // ------------------ LOGOUT ------------------
 // logout API (POST)
 router.post("/logout", (req, res) => {
@@ -274,5 +292,6 @@ router.post("/logout", (req, res) => {
     res.json({ success: true });
   });
 });
+
 
 module.exports = router;

@@ -1,60 +1,92 @@
-document.addEventListener("DOMContentLoaded", async () => {
+// File: public/js/user_library.js
+window.addEventListener("DOMContentLoaded", async () => {
+  const libraryList = document.getElementById("libraryList");
+  const gameNameList = document.getElementById("gameNameList");
+  const searchInput = document.getElementById("searchInput");
+  const filterType = document.getElementById("filterType");
+
   try {
-    // ✅ ดึงข้อมูล session เพื่อดูว่าใคร login
-    const sessionRes = await fetch("/check-session", { credentials: "include" });
-    const sessionData = await sessionRes.json();
+    // ==================== ตรวจสอบ session ====================
+    const resUser = await fetch("/check-session", { credentials: "include" });
+    if (!resUser.ok) throw new Error("Cannot check session");
+    const dataUser = await resUser.json();
+    if (!dataUser.loggedIn) return (window.location.href = "/login");
 
-    if (!sessionData.loggedIn) {
-      window.location.href = "/";
-      return;
-    }
+    document.getElementById("username").textContent = dataUser.user.name;
+    document.getElementById("profile-pic").src = dataUser.user.profile || "/image_game/default_game.png";
 
-    // แสดงชื่อผู้ใช้และรูป
-    document.getElementById("username").textContent = sessionData.user.name;
-    document.getElementById("profile-pic").src =
-      sessionData.user.profile || "./image/profile_icon.png";
-
-    // ✅ โหลดข้อมูล library
-    const res = await fetch(`/api/library/${sessionData.user.user_id}`);
-    const games = await res.json();
-
-    const list = document.getElementById("library-list");
-    const grid = document.getElementById("gameGrid");
-
-    list.innerHTML = "";
-    grid.innerHTML = "";
-
-    if (games.length === 0) {
-      grid.innerHTML = `<p style="color:white;">ยังไม่มีเกมในคลัง</p>`;
-      return;
-    }
-
-    // ✅ แสดงรายชื่อเกม (sidebar)
-    games.forEach(game => {
-      const li = document.createElement("li");
-      li.textContent = game.name;
-      list.appendChild(li);
+    // ==================== โหลดประเภทเกม ====================
+    const resTypes = await fetch("/api/games/types");
+    const types = await resTypes.json();
+    types.forEach(t => {
+      const opt = document.createElement("option");
+      opt.value = t.type;
+      opt.textContent = t.type;
+      filterType.appendChild(opt);
     });
 
-    // ✅ แสดงเกมใน grid
-    games.forEach(game => {
-      const card = document.createElement("div");
-      card.className = "game-card";
-      card.innerHTML = `
-        <img src="${game.profile || './image/default_game.png'}" 
-             alt="${game.name}" 
-             style="width:100%; border-radius:8px;">
-        <h3>${game.name}</h3>
-        <p style="font-size:0.9em;">${game.type}</p>
-        <button onclick="viewGame(${game.game_id})">View</button>
-      `;
-      grid.appendChild(card);
-    });
+    // ==================== โหลด Library ====================
+    async function loadLibrary(search = "", type = "") {
+      try {
+        const res = await fetch(`/api/library?search=${encodeURIComponent(search)}&type=${encodeURIComponent(type)}`, { credentials: "include" });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          libraryList.innerHTML = `<p style="color:red;">${errData.message || "เกิดข้อผิดพลาด"}</p>`;
+          gameNameList.innerHTML = "";
+          return;
+        }
+
+        const games = await res.json();
+        libraryList.innerHTML = "";
+        gameNameList.innerHTML = "";
+
+        if (games.length === 0) {
+          libraryList.innerHTML = `<p style="color:white;">ยังไม่มีเกมใน Library</p>`;
+          return;
+        }
+
+        games.forEach(game => {
+          // ----- Sidebar list -----
+          const li = document.createElement("li");
+          li.textContent = game.name;
+          li.addEventListener("click", () => window.location.href = `/user_game_detail?id=${game.game_id}`);
+          gameNameList.appendChild(li);
+
+          // ----- Card view -----
+          const card = document.createElement("div");
+          card.className = "library-card";
+
+          // ถ้าไม่มี image_url ให้ใช้ default
+          const imgSrc = game.image_url ? game.image_url : "/image_game/default_game.png";
+
+          card.innerHTML = `
+            <div class="game-image">
+              <img src="${imgSrc}" alt="${game.name}" style="width:100%; height:100px; object-fit:cover; border-radius:5px;">
+            </div>
+            <p style="margin-top:5px; font-weight:bold; color:black;">${game.name}</p>
+            <small style="font-size:0.8em; color:black;">Type: ${game.type || "N/A"}</small><br>
+          `;
+
+          card.addEventListener("click", () => window.location.href = `/user_game_detail?id=${game.game_id}`);
+          libraryList.appendChild(card);
+        });
+
+      } catch (err) {
+        console.error(err);
+        libraryList.innerHTML = `<p style="color:red;">เกิดข้อผิดพลาด: ${err.message}</p>`;
+        gameNameList.innerHTML = "";
+      }
+    }
+
+    // ==================== Event listeners ====================
+    searchInput.addEventListener("input", () => loadLibrary(searchInput.value, filterType.value));
+    filterType.addEventListener("change", () => loadLibrary(searchInput.value, filterType.value));
+
+    // ==================== โหลดตอนเริ่ม ====================
+    await loadLibrary();
+
   } catch (err) {
-    console.error("Error loading library:", err);
+    console.error(err);
+    libraryList.innerHTML = `<p style="color:red;">เกิดข้อผิดพลาด: ${err.message}</p>`;
   }
 });
-
-function viewGame(gameId) {
-  window.location.href = `/game_detail/${gameId}`;
-}

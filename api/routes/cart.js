@@ -103,9 +103,10 @@ router.post("/checkout", checkSession, async (req, res) => {
     const conn = await pool.promise().getConnection();
     try {
         const userId = req.session.userId;
+        const { discount_code } = req.body;
+
         await conn.beginTransaction();
 
-        // ดึงเกมทั้งหมดใน cart
         const [cartItems] = await conn.query(`
             SELECT ci.game_id, ci.quantity, g.price, g.name
             FROM cart c
@@ -113,49 +114,53 @@ router.post("/checkout", checkSession, async (req, res) => {
             JOIN games g ON ci.game_id = g.game_id
             WHERE c.user_id = ?
         `, [userId]);
+
         if (cartItems.length === 0) {
             await conn.rollback();
             return res.json({ success: false, message: "ตะกร้าว่าง" });
         }
 
-        // ดึง wallet
         const [[user]] = await conn.query("SELECT wallet_balance FROM users WHERE user_id = ?", [userId]);
-        const totalPrice = cartItems.reduce((sum, g) => sum + g.price * g.quantity, 0);
+        let totalPrice = cartItems.reduce((sum, g) => sum + g.price * g.quantity, 0);
+
+        // Apply discount code
+        if (discount_code) {
+            const [[code]] = await conn.query("SELECT * FROM codes WHERE code = ?", [discount_code]);
+            if (!code) {
+                await conn.rollback();
+                return res.json({ success: false, message: "Code not found" });
+            }
+
+            if (code.used_count >= code.max_uses) {
+                await conn.rollback();
+                return res.json({ success: false, message: "Code usage limit reached" });
+            }
+
+            if (code.discount_type === "percent") totalPrice -= totalPrice * (code.discount_value / 100);
+            else totalPrice -= code.discount_value;
+
+            totalPrice = Math.max(totalPrice, 0);
+
+            // เพิ่ม record code_usage
+            await conn.query("INSERT INTO code_usage (code_id, user_id) VALUES (?, ?)", [code.code_id, userId]);
+            await conn.query("UPDATE codes SET used_count = used_count + 1 WHERE code_id = ?", [code.code_id]);
+        }
 
         if (user.wallet_balance < totalPrice) {
             await conn.rollback();
             return res.json({ success: false, message: "ยอดเงินไม่เพียงพอ" });
         }
 
-        // ลดเงิน wallet
-        await conn.query(
-            "UPDATE users SET wallet_balance = wallet_balance - ? WHERE user_id = ?",
-            [totalPrice, userId]
-        );
+        await conn.query("UPDATE users SET wallet_balance = wallet_balance - ? WHERE user_id = ?", [totalPrice, userId]);
+        await conn.query("INSERT INTO transactions (user_id, type, amount, description) VALUES (?, ?, ?, ?)",
+            [userId, "purchase", totalPrice, `Bought ${cartItems.map(g => g.name).join(", ")}`]);
 
-        // เพิ่ม transaction
-        await conn.query(
-            "INSERT INTO transactions (user_id, type, amount, description) VALUES (?, ?, ?, ?)",
-            [userId, "purchase", totalPrice, `Bought ${cartItems.map(g => g.name).join(", ")}`]
-        );
-
-        // เพิ่มไป library
         const libraryValues = cartItems.map(g => [userId, g.game_id]);
         await conn.query("INSERT INTO library (user_id, game_id) VALUES ?", [libraryValues]);
-
-        // ลบจาก cart_items
-        await conn.query(
-            "DELETE ci FROM cart_items ci JOIN cart c ON ci.cart_id = c.cart_id WHERE c.user_id = ?",
-            [userId]
-        );
+        await conn.query("DELETE ci FROM cart_items ci JOIN cart c ON ci.cart_id = c.cart_id WHERE c.user_id = ?", [userId]);
 
         await conn.commit();
-        res.json({
-            success: true,
-            message: "ซื้อเกมเรียบร้อย!",
-            totalAmount: totalPrice,
-            items: cartItems
-        });
+        res.json({ success: true, message: "ซื้อเกมเรียบร้อย!", totalAmount: totalPrice, items: cartItems });
 
     } catch (err) {
         await conn.rollback();
@@ -165,6 +170,7 @@ router.post("/checkout", checkSession, async (req, res) => {
         conn.release();
     }
 });
+
 
 // ------------------ POST /api/wallet/topup ------------------
 // เติมเงิน wallet

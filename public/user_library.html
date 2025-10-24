@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Library | Game Shop</title>
   <link rel="stylesheet" href="./css/user_style.css" />
 </head>
-
 <body>
+
   <!-- Navbar -->
   <div class="navbar">
     <div class="navbar-left">
@@ -17,38 +16,42 @@
     </div>
 
     <div class="navbar-right">
-      <a href="/admin_main">Store</a>
-      <a href="/library" class="active">Library</a>
-      <a href="/admin_profile" id="username">username</a>
+      <a href="/user_main">Store</a>
+      <a href="/user_library" class="active">Library</a>
+      <a href="/user_profile" id="username">User</a>
       <div class="user-info">
-        <img id="profile-pic" src="./image/profile_icon.png" alt="Profile Picture" />
+        <img id="profile-pic" src="" alt="Profile Picture" />
       </div>
     </div>
   </div>
 
-  <!-- Library Content -->
+  <!-- ======================= MAIN CONTENT ======================= -->
   <div class="library-container">
-    <h2>My Library</h2>
-    <div class="library-layout">
-      <!-- Sidebar -->
-      <div class="library-sidebar">
-        <label for="search">search</label>
-        <input type="text" id="search" placeholder="Search game..." />
-        <label for="filter">filter</label>
-        <input type="text" id="filter" placeholder="Filter type..." />
-        <ul id="library-list"></ul>
-      </div>
+    <h2 class="library-title">My Library</h2>
 
-      <!-- Main Game Display -->
-      <div class="library-display">
-        <div class="game-grid" id="gameGrid">
-          <!-- โหลดข้อมูลเกมด้วย JS -->
+    <div class="library-body">
+      <!-- Sidebar -->
+      <aside class="library-sidebar">
+        <label>search</label>
+        <input type="text" id="searchInput" placeholder="Search game...">
+        <label>filter</label>
+        <select id="filterType">
+          <option value="">All</option>
+        </select>
+
+        <ul id="gameNameList" class="game-name-list"></ul>
+      </aside>
+
+      <!-- Main content -->
+      <main class="library-main">
+        <div id="libraryList" class="library-grid">
+          <!-- โหลดเกมจากฐานข้อมูล -->
         </div>
-      </div>
+      </main>
     </div>
   </div>
 
-  <script src="./js/library.js"></script>
+  <script src="./js/navbar.js"></script>
+  <script src="./js/user_library.js"></script>
 </body>
-
 </html>

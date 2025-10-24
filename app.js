@@ -6,23 +6,23 @@ const userRouter = require("./api/routes/user");
 const gameRouter = require("./api/routes/game");
 const cartRouter = require("./api/routes/cart");
 const walletRouter = require("./api/routes/wallet");
+const libraryRouter = require("./api/routes/library");
+const transactionsRouter = require("./api/routes/transactions");
 
 const app = express();
 
-// ✅ ตั้งค่า session ก่อนทุกอย่าง
+// ✅ Session
 app.use(
-  session({
+  session({ 
     secret: "gameshop-secret-key",
     resave: false,
     saveUninitialized: false,
-    cookie: {
-      secure: false, // false เพราะยังไม่ใช่ https
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    },
+    cookie: { secure: false, maxAge: 7 * 24 * 60 * 60 * 1000 },
   })
 );
 
-// ✅ รองรับ JSON และฟอร์ม
+
+// ✅ JSON และ form
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -30,21 +30,21 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
+// ✅ Serve image_game folder
+app.use('/image_game', express.static(path.join(__dirname, 'public/image_game')));
+
 // ✅ Routes
 app.use("/", userRouter);
 app.use("/api/games", gameRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/user/wallet", walletRouter);
-
-const transactionsRouter = require("./api/routes/transactions");
 app.use("/api/transactions", transactionsRouter);
+app.use("/api", libraryRouter);
 
-const libraryRouter = require("./api/routes/library");
-app.use("/api/library", libraryRouter);
+const codeRouter = require("./api/routes/code");
+app.use("/api/codes", codeRouter);
 
-// ✅ Test route
-app.get("/hello", (req, res) => {
-  res.send("URL Test Hello GameShop");
-});
+// ✅ Test
+app.get("/hello", (req, res) => res.send("Hello GameShop"));
 
 module.exports = app;

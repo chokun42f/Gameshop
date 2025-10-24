@@ -13,8 +13,10 @@
   "dependencies": {
     "body-parser": "^2.2.0",
     "cloudinary": "^1.41.3",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
+    "mongoose": "^8.19.2",
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^4.0.0",
     "mysql2": "^3.15.1"
@@ -23,5 +25,14 @@
     "nodemon": "^3.1.10",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chokun42f/Gameshop.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/chokun42f/Gameshop/issues"
+  },
+  "homepage": "https://github.com/chokun42f/Gameshop#readme"
 }

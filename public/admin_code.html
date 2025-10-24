@@ -4,10 +4,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin | Game Shop</title>
+    <title>Admin | Code Management</title>
     <link rel="stylesheet" href="./css/user_style.css" />
 </head>
 
+<body>
+    <!-- ======================= NAVBAR ======================= -->
     <div class="navbar">
         <div class="navbar-left">
             <img src="./image/logo1.png" alt="logo" class="logo" />
@@ -19,7 +21,49 @@
             <a href="/admin_code">Code</a>
             <a href="/admin_profile" id="username">User</a>
             <div class="user-info">
-                <img id="profile-pic" src="./image/profile_icon.png" alt="Profile Picture" />
+                <img id="profile-pic" src="./image/user.png" alt="Profile Picture" />
             </div>
         </div>
     </div>
+
+    <!-- ======================= BODY ======================= -->
+    <div class="profile-container">
+        <h2 class="page-title">Manage Discount Codes</h2>
+        <button class="amount-btn" onclick="openAddCodeModal()">➕ Add Code</button>
+
+        <div id="codesList" class="codes-list">
+            <!-- กล่องโค้ดทั้งหมดจะถูกโหลดจาก JS -->
+        </div>
+    </div>
+
+    <!-- ======================= MODAL ADD/EDIT ======================= -->
+    <div id="codeModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3 id="modalTitle">Add Code</h3>
+
+            <label for="code">Code Name</label>
+            <input type="text" id="code" placeholder="Enter code name">
+
+            <label for="discount_type">Discount Type</label>
+            <select id="discount_type">
+                <option value="percent">Percent (%)</option>
+                <option value="fixed">Fixed Amount</option>
+            </select>
+
+            <label for="discount_value">Discount Value</label>
+            <input type="number" id="discount_value" placeholder="Enter discount value">
+
+            <label for="max_uses">Max Uses</label>
+            <input type="number" id="max_uses" value="1">
+
+
+            <button class="amount-btn" onclick="saveCode()">Save</button>
+        </div>
+    </div>
+
+    <script src="./js/navbar.js"></script>
+    <script src="./js/admin_code.js"></script>
+</body>
+
+</html>

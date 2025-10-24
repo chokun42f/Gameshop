@@ -5,13 +5,18 @@ window.addEventListener("DOMContentLoaded", async () => {
     const totalEl = document.getElementById("total");
     const discountEl = document.getElementById("discount");
     const checkoutBtn = document.getElementById("checkoutBtn");
+    const discountCodeInput = document.getElementById("discountCode");
+    const applyCodeBtn = document.getElementById("applyCodeBtn");
+    const discountMessage = document.getElementById("discountMessage");
+
+    let discountAmount = 0;
+    let discountType = null;
 
     // ==================== โหลด wallet balance ====================
     async function loadWallet() {
         try {
             const res = await fetch("/api/user/wallet", { credentials: "include" });
             const data = await res.json();
-            console.log("Wallet data:", data);
             if (!data.success) return alert(data.message);
             cartAmount.textContent = `${data.wallet_balance} THB`;
         } catch (err) {
@@ -48,8 +53,7 @@ window.addEventListener("DOMContentLoaded", async () => {
             });
 
             subtotalEl.textContent = `${subtotal} THB`;
-            const discount = parseFloat(discountEl.value) || 0;
-            totalEl.textContent = `${Math.max(subtotal - discount, 0)} THB`;
+            updateTotal(subtotal);
 
             // ==================== ลบเกมจาก cart ====================
             document.querySelectorAll(".delete-btn").forEach(btn => {
@@ -73,49 +77,82 @@ window.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // ==================== Checkout ====================
-checkoutBtn.addEventListener("click", async () => {
-    try {
-        const res = await fetch("/api/cart/checkout", {
-            method: "POST",
-            credentials: "include"
-        });
-        const data = await res.json();
-        alert(data.message);
+    // ==================== Apply Discount Code ====================
+    applyCodeBtn.addEventListener("click", async () => {
+        const code = discountCodeInput.value.trim();
+        if (!code) return alert("กรุณาใส่โค้ด");
 
-        if (data.success && data.items) {
-            // อัปเดต sales_count
-            await fetch("/api/games/update-sales", {
+        try {
+            const res = await fetch("/api/codes/apply", {
                 method: "POST",
-                credentials: "include",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    items: data.items.map(i => ({
-                        game_id: i.game_id,
-                        quantity: i.quantity
-                    }))
-                })
+                credentials: "include",
+                body: JSON.stringify({ code: code })
             });
+            const data = await res.json();
+
+            if (!res.ok) throw new Error(data.message || "Invalid code");
+
+            discountAmount = parseFloat(data.discount_value);
+            discountType = data.discount_type;
+            discountMessage.textContent = `Applied: ${discountType === "percent" ? discountAmount + "%" : discountAmount + " THB"}`;
+
+            updateTotal();
+
+        } catch (err) {
+            console.error("Error applying code:", err);
+            discountMessage.textContent = `❌ ${err.message}`;
+            discountAmount = 0;
+            discountType = null;
+            updateTotal();
+        }
+    });
+
+    // ==================== Update total ====================
+    function updateTotal(subtotal) {
+        subtotal = subtotal || parseFloat(subtotalEl.textContent) || 0;
+        let total = subtotal;
+
+        if (discountAmount) {
+            if (discountType === "percent") total = subtotal - subtotal * (discountAmount / 100);
+            else total = subtotal - discountAmount;
         }
 
-        // โหลด cart ใหม่
-        await loadCart();
-
-        // โหลด wallet balance ใหม่
-        await loadWallet();
-
-    } catch (err) {
-        console.error("Error during checkout:", err);
-        alert("❌ Error during checkout");
+        totalEl.textContent = `${Math.max(total, 0)} THB`;
     }
-});
 
-
-    // ==================== Update total เมื่อแก้ discount ====================
     discountEl.addEventListener("input", () => {
         const subtotal = parseFloat(subtotalEl.textContent) || 0;
-        const discount = parseFloat(discountEl.value) || 0;
-        totalEl.textContent = `${Math.max(subtotal - discount, 0)} THB`;
+        const manualDiscount = parseFloat(discountEl.value) || 0;
+        totalEl.textContent = `${Math.max(subtotal - manualDiscount, 0)} THB`;
+    });
+
+    // ==================== Checkout ====================
+    checkoutBtn.addEventListener("click", async () => {
+        try {
+            const res = await fetch("/api/cart/checkout", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ discount_code: discountCodeInput.value.trim() })
+            });
+
+            const data = await res.json();
+            alert(data.message);
+
+            if (data.success) {
+                await loadCart();
+                await loadWallet();
+                discountAmount = 0;
+                discountType = null;
+                discountCodeInput.value = "";
+                discountMessage.textContent = "";
+            }
+
+        } catch (err) {
+            console.error("Error during checkout:", err);
+            alert("❌ Error during checkout");
+        }
     });
 
     // ==================== โหลด wallet และ cart ตอนเริ่ม ====================
