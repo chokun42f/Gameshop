@@ -90,8 +90,10 @@ router.get("/user_library", isLoggedIn, (req, res) => {
       "SELECT * FROM users WHERE email = ? AND password = ?",
       [email, password],
       (err, results) => {
-        if (err) return res.status(500).json({ error: err.message });
-
+      if (err) {
+        console.error("DB ERROR:", err);
+        return res.status(500).json({ error: err.message });
+      }
         if (results.length > 0) {
           const user = results[0];
           req.session.userId = user.user_id;       // 🔑 สำคัญสำหรับ cart.js
