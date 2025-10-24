@@ -1,11 +1,13 @@
 const mysql = require('mysql2');
 
+// ใช้ค่า Environment Variables จาก Railway
 const pool = mysql.createPool({
   connectionLimit: 10,
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  host: process.env.MYSQLHOST,       // mysql.railway.internal
+  user: process.env.MYSQLUSER,       // root
+  password: process.env.MYSQLPASSWORD,
+  database: process.env.MYSQLDATABASE, // railway
+  port: process.env.MYSQLPORT || 3306
 });
 
 module.exports = pool;
