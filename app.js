@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const session = require("express-session");
+require('dotenv').config();
 
 const userRouter = require("./api/routes/user");
 const gameRouter = require("./api/routes/game");
@@ -14,11 +15,12 @@ const app = express();
 
 // ------------------- SESSION -------------------
 app.use(session({
-  secret: process.env.SESSION_SECRET,
+  secret: process.env.SESSION_SECRET || "fallback-secret",
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false, maxAge: 7 * 24 * 60 * 60 * 1000 },
+  cookie: { secure: false, maxAge: 7*24*60*60*1000 }
 }));
+
 
 // ------------------- JSON / FORM -------------------
 app.use(express.urlencoded({ extended: true }));
