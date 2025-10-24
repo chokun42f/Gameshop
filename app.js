@@ -43,8 +43,4 @@ app.use("/api/codes", codeRouter);
 // ------------------- Test -------------------
 app.get("/hello", (req, res) => res.send("Hello GameShop"));
 
-// ------------------- Start server -------------------
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Server running on port ${port}`));
-
 module.exports = app;
