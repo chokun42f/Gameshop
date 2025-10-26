@@ -40,7 +40,7 @@ router.post("/add", checkSession, async (req, res) => {
 
         // ตรวจสอบว่าเกมอยู่ใน library แล้วหรือยัง
         const [owned] = await pool.promise().query(
-            "SELECT * FROM library WHERE user_id = ? AND game_id = ?",
+            "SELECT * FROM user_library WHERE user_id = ? AND game_id = ?",
             [userId, game_id]
         );
         if (owned.length > 0)
@@ -156,7 +156,7 @@ router.post("/checkout", checkSession, async (req, res) => {
             [userId, "purchase", totalPrice, `Bought ${cartItems.map(g => g.name).join(", ")}`]);
 
         const libraryValues = cartItems.map(g => [userId, g.game_id]);
-        await conn.query("INSERT INTO library (user_id, game_id) VALUES ?", [libraryValues]);
+        await conn.query("INSERT INTO user_library (user_id, game_id) VALUES ?", [libraryValues]);
         await conn.query("DELETE ci FROM cart_items ci JOIN cart c ON ci.cart_id = c.cart_id WHERE c.user_id = ?", [userId]);
 
         await conn.commit();

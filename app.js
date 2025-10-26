@@ -45,10 +45,4 @@ app.get("/hello", (req, res) => res.send("Hello GameShop"));
 
 const pool = require('./dbconn');
 
-pool.query("SELECT 1 + 1 AS result", (err, results) => {
-  if (err) throw err;
-  console.log(results); // เช็คว่าเชื่อม DB ได้หรือยัง
-});
-
-
 module.exports = app;

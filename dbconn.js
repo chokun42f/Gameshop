@@ -1,13 +1,21 @@
-const mysql = require('mysql2');
+const mysql =require('mysql2')
 
-// ใช้ค่า Environment Variables จาก Railway
 const pool = mysql.createPool({
-  connectionLimit: 10,
-  host: process.env.MYSQLHOST,       // mysql.railway.internal
-  user: process.env.MYSQLUSER,       // root
-  password: process.env.MYSQLPASSWORD,
-  database: process.env.MYSQLDATABASE, // railway
-  port: process.env.MYSQLPORT || 3306
+    connectionLimit: 10,
+    host        :'202.28.34.203',
+    user        :'mb68_65011212116',
+    password    :'4fs5$$qozC^O',
+    database    :'mb68_65011212116',
+
+});
+
+pool.getConnection((err, connection) => {
+    if (err) {
+        console.error('❌ ไม่สามารถเชื่อมต่อฐานข้อมูลได้:', err.message);
+    } else {
+        console.log('✅ เชื่อมต่อฐานข้อมูลสำเร็จ');
+        connection.release();
+    }
 });
 
 module.exports = pool;

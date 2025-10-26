@@ -2,15 +2,15 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../../dbconn");
 
-// GET /api/library?search=&type=
-// GET /api/library?search=&type=
+// GET /api/user_library?search=&type=
+// GET /api/user_library?search=&type=
 router.get("/library", async (req, res) => {
   try {
     if (!req.session.userId) return res.status(401).json({ success: false, message: "Unauthorized" });
 
     const { search = "", type = "" } = req.query;
     let sql = `SELECT l.game_id, g.name, g.type, g.price, g.profile AS image_url, l.purchased_at
-               FROM library l
+               FROM user_library l
                JOIN games g ON l.game_id = g.game_id
                WHERE l.user_id = ?`;
     const params = [req.session.userId];
