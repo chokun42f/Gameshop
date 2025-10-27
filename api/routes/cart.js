@@ -16,15 +16,28 @@ function checkSession(req, res, next) {
 router.get("/", checkSession, async (req, res) => {
     try {
         const userId = req.session.userId;
+
+        // ตรวจสอบหรือสร้าง cart ถ้ายังไม่มี
+        let [[cart]] = await pool.promise().query(
+            "SELECT cart_id FROM cart WHERE user_id = ?", [userId]
+        );
+        if (!cart) {
+            const [result] = await pool.promise().query(
+                "INSERT INTO cart (user_id) VALUES (?)", [userId]
+            );
+            cart = { cart_id: result.insertId };
+        }
+
         const [rows] = await pool.promise().query(`
             SELECT ci.game_id, g.name, g.type, g.price, g.profile AS image_url, ci.quantity
-            FROM cart c
-            JOIN cart_items ci ON ci.cart_id = c.cart_id
+            FROM cart_items ci
             JOIN games g ON ci.game_id = g.game_id
-            WHERE c.user_id = ?
-        `, [userId]);
+            WHERE ci.cart_id = ?
+        `, [cart.cart_id]);
 
-        res.json({ success: true, cart: rows });
+        const total = rows.reduce((sum, g) => sum + g.price * g.quantity, 0);
+
+        res.json({ success: true, cart: rows, total });
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: "Server error" });
@@ -38,29 +51,25 @@ router.post("/add", checkSession, async (req, res) => {
         const { game_id, quantity } = req.body;
         const userId = req.session.userId;
 
-        // ตรวจสอบว่าเกมอยู่ใน library แล้วหรือยัง
-        const [owned] = await pool.promise().query(
-            "SELECT * FROM user_library WHERE user_id = ? AND game_id = ?",
-            [userId, game_id]
+        // ตรวจสอบหรือสร้าง cart ถ้ายังไม่มี
+        let [[cart]] = await pool.promise().query(
+            "SELECT cart_id FROM cart WHERE user_id = ?", [userId]
         );
-        if (owned.length > 0)
-            return res.json({ success: false, message: "คุณมีเกมนี้อยู่แล้วใน Library!" });
+        if (!cart) {
+            const [result] = await pool.promise().query(
+                "INSERT INTO cart (user_id) VALUES (?)", [userId]
+            );
+            cart = { cart_id: result.insertId };
+        }
 
-        // ตรวจสอบเกมในตะกร้า
+        // ตรวจสอบเกมใน cart
         const [cartItem] = await pool.promise().query(
-            "SELECT * FROM cart_items WHERE cart_id = (SELECT cart_id FROM cart WHERE user_id = ?) AND game_id = ?",
-            [userId, game_id]
+            "SELECT * FROM cart_items WHERE cart_id = ? AND game_id = ?",
+            [cart.cart_id, game_id]
         );
         if (cartItem.length > 0)
             return res.json({ success: false, message: "เกมนี้อยู่ในตะกร้าแล้ว" });
 
-        // หา cart_id
-        const [[cart]] = await pool.promise().query(
-            "SELECT cart_id FROM cart WHERE user_id = ?", [userId]
-        );
-        if (!cart) return res.status(400).json({ success: false, message: "Cart not found" });
-
-        // เพิ่มเกมลง cart
         await pool.promise().query(
             "INSERT INTO cart_items (cart_id, game_id, quantity) VALUES (?, ?, ?)",
             [cart.cart_id, game_id, quantity || 1]

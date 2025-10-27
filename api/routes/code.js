@@ -66,34 +66,29 @@ router.put("/:id", isAdmin, async (req, res) => {
   }
 });
 
-
 // ================== APPLY CODE (User) ==================
 router.post("/apply", isLoggedIn, async (req, res) => {
   try {
     const userId = req.session.user.user_id;
-    const { code: codeInput } = req.body;  // rename เพื่อไม่ซ้ำกับ DB result
+    const { code: codeInput } = req.body;
 
-    // ดึงโค้ดจาก DB
     const [[codeData]] = await pool.promise().query(
       "SELECT * FROM codes WHERE code = ?",
       [codeInput]
     );
 
     if (!codeData) return res.status(404).json({ message: "Code not found" });
-
-    // ตรวจสอบจำนวนครั้งใช้
-    if (codeData.used_count >= codeData.max_uses) {
+    if (codeData.used_count >= codeData.max_uses)
       return res.status(400).json({ message: "Code usage limit reached" });
-    }
 
-    // ตรวจสอบว่า user เคยใช้โค้ดนี้หรือไม่
     const [[usage]] = await pool.promise().query(
       "SELECT * FROM code_usage WHERE code_id = ? AND user_id = ?",
       [codeData.code_id, userId]
     );
-    if (usage) return res.status(400).json({ message: "You have already used this code" });
 
-    // เพิ่มลง code_usage
+    if (usage)
+      return res.status(400).json({ message: "You have already used this code" });
+
     await pool.promise().query(
       "INSERT INTO code_usage (code_id, user_id) VALUES (?, ?)",
       [codeData.code_id, userId]
@@ -104,6 +99,14 @@ router.post("/apply", isLoggedIn, async (req, res) => {
       "UPDATE codes SET used_count = used_count + 1 WHERE code_id = ?",
       [codeData.code_id]
     );
+
+    // ถ้าใช้ครบ max_uses แล้ว ลบโค้ดทิ้ง
+    if (codeData.used_count + 1 >= codeData.max_uses) {
+      await pool.promise().query(
+        "DELETE FROM codes WHERE code_id = ?",
+        [codeData.code_id]
+      );
+    }
 
     res.json({
       message: "Code applied successfully",
