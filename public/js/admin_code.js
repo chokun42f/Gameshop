@@ -2,6 +2,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     loadCodeTable();
 });
 
+let showExpired = false; // state สำหรับแสดงโค้ดหมดอายุหรือไม่
+
 // ================== โหลดโค้ดทั้งหมด ==================
 async function loadCodeTable() {
     try {
@@ -12,18 +14,30 @@ async function loadCodeTable() {
         const container = document.getElementById("codesList");
         container.innerHTML = "";
 
-        codes.forEach(c => {
+        // กรองตาม state
+        const visibleCodes = showExpired
+            ? codes // แสดงทั้งหมด
+            : codes.filter(c => c.used_count < c.max_uses); // ซ่อนโค้ดหมดอายุ
+
+        if (visibleCodes.length === 0) {
+            container.innerHTML = `<p style="text-align:center;color:#999;">No codes to display.</p>`;
+            return;
+        }
+
+        visibleCodes.forEach(c => {
+            const expired = c.used_count >= c.max_uses;
             const card = document.createElement("div");
             card.className = "code-card";
+            card.style.opacity = expired ? "0.5" : "1";
 
             card.innerHTML = `
                 <div class="code-info">
-                    <span>${c.code}</span>
-                    <span>${c.discount_type === 'percent' ? c.discount_value + '%' : c.discount_value}</span>
-                    <span>${c.amount}</span>
+                    <span><strong>${c.code}</strong></span>
+                    <span>${c.discount_type === 'percent' ? c.discount_value + '%' : '฿' + c.discount_value}</span>
+                    <span>Used: ${c.used_count}/${c.max_uses}</span>
                 </div>
                 <div class="code-actions">
-                    <button class="edit-btn" onclick="openEditCodeModal(${c.code_id}, '${c.code}', '${c.discount_type}', ${c.discount_value}, ${c.max_uses})">Edit</button>
+                    <button class="edit-btn" onclick="openEditCodeModal(${c.code_id}, '${c.code}', '${c.discount_type}', ${c.discount_value}, ${c.max_uses})" ${expired ? 'disabled' : ''}>Edit</button>
                     <button class="delete-btn" onclick="deleteCode(${c.code_id})">Delete</button>
                 </div>
             `;
@@ -33,6 +47,14 @@ async function loadCodeTable() {
     } catch (err) {
         console.error("Error loading code table:", err);
     }
+}
+
+// ================== Toggle Show Expired ==================
+function toggleExpired() {
+    showExpired = !showExpired;
+    const btn = document.querySelector('button[onclick="toggleExpired()"]');
+    btn.textContent = showExpired ? "🙈 Hide Expired Codes" : "👁 Show Expired Codes";
+    loadCodeTable();
 }
 
 // ================== Modal Add/Edit ==================
